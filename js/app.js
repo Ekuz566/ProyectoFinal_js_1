@@ -1,38 +1,77 @@
 import { Ingreso } from './Ingreso.js';
 import { Egreso } from './Egreso.js';
 
-// Arreglos de prueba para que las funciones tengan algo que sumar
 const ingresos = [
-    new Ingreso('Salario', 4000),
-    new Ingreso('Venta coche', 1500)
+    new Ingreso('Salario', 20000),
+    new Ingreso('Venta auto', 50000)
 ];
 
 const egresos = [
-    new Egreso('Renta', 900),
-    new Egreso('Ropa', 400)
+    new Egreso('Renta', 4000),
+    new Egreso('Ropa', 800)
 ];
 
-let totalIngresos = () => {
+const totalIngresos = () => {
     let totalIngreso = 0;
     for (let ingreso of ingresos) {
+    
         totalIngreso += ingreso.valor;
     }
     return totalIngreso;
 };
 
-let totalEgresos = () => {
-    let totalEgreso = 0;
+const totalEgresos = () => {
+    let totalEgreso = 0; 
     for (let egreso of egresos) {
-        totalEgreso += egreso.valor;
+        totalEgreso += egreso.valor; 
     }
-    return totalEgreso;
+    return totalEgreso; 
 }
 
 //Función cargar cabecero
 
-let cargarCabecero = () => {
-    //1. Crea la variable presupuesto y asígnale la resta
-    let presupuesto = totalIngresos() - totalEgresos();
-    //2. Variable porcentaje egreso
-    let porcentajeEgreso = totalEgresos() / totalIngresos;
+const formatoMoneda = (valor) => {
+    return valor.toLocaleString('en-US', {
+        style: 'currency',
+        currency: 'MXN',
+        minimumFractionDigits: 2
+    });
+};
+
+const formatoPorcentaje = (valor) => {
+    return valor.toLocaleString('en-US', {
+        style: 'percent',
+        minimumFractionDigits: 2
+    });
+
 }
+
+const cargarCabecero = () => {
+    //1. Crea la variable presupuesto y asígnale la resta
+    const presupuesto = totalIngresos() - totalEgresos();
+    //2. Variable porcentaje egreso
+    const porcentajeEgreso = totalEgresos() / totalIngresos();      
+
+    console.log("--- RESULTADOS FORMATEADOS ---");
+    console.log("Presupuesto: " + formatoMoneda(presupuesto));
+    console.log("Porcentaje de Egreso: " + formatoPorcentaje(porcentajeEgreso));
+    
+    // También puedes ver los totales
+    console.log("Total Ingresos: " + formatoMoneda(totalIngresos()));
+    console.log("Total Egresos: " + formatoMoneda(totalEgresos()));
+}
+
+const cargarApp = () => {
+    cargarCabecero();
+}
+
+// Llama a la aplicación al cargar el archivo
+cargarApp();
+
+
+
+
+
+
+
+
