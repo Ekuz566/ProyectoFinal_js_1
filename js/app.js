@@ -52,21 +52,115 @@ const cargarCabecero = () => {
     //2. Variable porcentaje egreso
     const porcentajeEgreso = totalEgresos() / totalIngresos();      
 
-    console.log("--- RESULTADOS FORMATEADOS ---");
-    console.log("Presupuesto: " + formatoMoneda(presupuesto));
-    console.log("Porcentaje de Egreso: " + formatoPorcentaje(porcentajeEgreso));
-    
-    // También puedes ver los totales
-    console.log("Total Ingresos: " + formatoMoneda(totalIngresos()));
-    console.log("Total Egresos: " + formatoMoneda(totalEgresos()));
+    document.getElementById('presupuesto').innerHTML = formatoMoneda(presupuesto);
+    document.getElementById('ingresos').innerHTML = formatoMoneda(totalIngresos());
+    document.getElementById('egresos').innerHTML = formatoMoneda(totalEgresos());
+    document.getElementById('porcentaje').innerHTML = formatoPorcentaje(porcentajeEgreso);
 }
 
 const cargarApp = () => {
     cargarCabecero();
+    cargarIngresos();
+    cargarEgresos();
 }
 
-// Llama a la aplicación al cargar el archivo
-cargarApp();
+const cargarIngresos = () => {
+    let ingresosHTML = '';
+    for (let ingreso of ingresos) {
+        ingresosHTML += crearIngresoHTML(ingreso); 
+    }
+    document.getElementById('lista-ingresos').innerHTML = ingresosHTML; 
+}
+
+const crearIngresoHTML = (ingreso) => {
+    let ingresoHTML = `
+    <div class="elemento limpiarEstilos">
+        <div class="elemento_descripcion">${ingreso.descripcion}</div>
+        <div class="derecha limpiarEstilos">
+            <div class="elemento_valor">+ ${formatoMoneda(ingreso.valor)}</div>
+            <div class="elemento_eliminar">
+                <button class="elemento_eliminar--btn">
+                    <ion-icon name="close-circle-outline"
+                        onclick="eliminarIngreso(${ingreso.id})"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    `;
+    return ingresoHTML;
+}
+
+const cargarEgresos = () => {
+    let egresosHTML = '';
+    for (let egreso of egresos) {
+        egresosHTML += cargarEgresoHTML(egreso);
+    }
+    document.getElementById('lista-egresos').innerHTML = egresosHTML;
+}
+
+const cargarEgresoHTML = (egreso) => {
+    let porcentajeEgreso = egreso.valor / totalIngresos();
+
+    let egresoHTML = `
+    <div class="elemento limpiarEstilos">
+        <div class="elemento_descripcion">${egreso.descripcion}</div>
+        <div class="derecha limpiarEstilos">
+            <div class="elemento_valor">- ${formatoMoneda(egreso.valor)}</div>
+            <div class="elemento_porcentaje">${formatoPorcentaje(porcentajeEgreso)}</div>
+            <div class="elemento_eliminar">
+                <button class="elemento_eliminar--btn">
+                    <ion-icon name="close-circle-outline"
+                        onclick="eliminarEgreso(${egreso.id})"></ion-icon>
+                </button>
+            </div>
+        </div>
+    </div>
+    `;
+    return egresoHTML;
+}
+
+const eliminarEgreso = (id) => {
+    let indiceEliminar = egresos.findIndex(egreso => egreso.id === id);
+    egresos.splice(indiceEliminar, 1);
+
+    cargarCabecero();
+    cargarEgresos();
+}
+
+const eliminarIngreso = (id) => {
+    let indiceEliminar = ingresos.findIndex(ingreso => ingreso.id === id);
+    ingresos.splice(indiceEliminar, 1);
+    cargarCabecero();
+    cargarIngresos();
+}
+
+const agregarDato = () => {
+    let forma = document.forms['forma'];
+
+    let tipo = forma['tipo'].value;
+    let descripcion = forma['descripcion'].value;
+    let valor = forma['valor'].value;
+
+    if (descripcion !== '' && valor !== '') {
+        if (tipo === 'ingreso') {
+            ingresos.push(new Ingreso(descripcion, +valor));
+            cargarCabecero();
+            cargarIngresos();
+        } 
+        else if (tipo === 'egreso') {
+            egresos.push(new Egreso(descripcion, +valor));
+            cargarCabecero();
+            cargarEgresos();
+        }
+        forma.reset();
+    }
+}
+
+window.cargarApp = cargarApp;
+window.agregarDato = agregarDato;
+window.eliminarEgreso = eliminarEgreso;
+window.eliminarIngreso = eliminarIngreso;
+
 
 
 
